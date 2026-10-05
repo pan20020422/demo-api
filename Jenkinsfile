@@ -4,7 +4,7 @@ pipeline {
     HARBOR = '192.168.118.100:30002'
     IMAGE = "${HARBOR}/library/demo-api"
     TAG = "v${BUILD_NUMBER}"
-    GITOPS_REPO = 'https://github.com/panlinfeng/gitops-config.git'
+    GITOPS_REPO = 'https://github.com/pan20020422/gitops-config.git'
   }
   stages {
     stage('Checkout') { steps { checkout scm } }
@@ -25,7 +25,7 @@ pipeline {
                                           usernameVariable: 'HUSER',
                                           passwordVariable: 'HPASS')]) {
           sh """
-            docker login ${HARBOR} -u${HUSER} -p ${HPASS}
+            docker login ${HARBOR} -u ${HUSER} -p ${HPASS}
             docker push ${IMAGE}:${TAG}
           """
         }
