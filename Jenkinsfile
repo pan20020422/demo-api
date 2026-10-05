@@ -7,18 +7,21 @@ pipeline {
     GITOPS_REPO = 'https://github.com/pan20020422/gitops-config.git'
   }
   stages {
-    stage('Checkout') { steps { checkout scm } }
-
-    stage('Build Image') {
-      steps { sh "docker build -t ${IMAGE}:${TAG} ." }
+    stage('Checkout') {
+      steps {
+        checkout scm
+      }
     }
-
+    stage('Build Image') {
+      steps {
+        sh "docker build -t ${IMAGE}:${TAG} ."
+      }
+    }
     stage('Trivy Scan') {
       steps {
         sh "trivy image --exit-code 1 --severity HIGH,CRITICAL ${IMAGE}:${TAG}"
       }
     }
-
     stage('Push Harbor') {
       steps {
         withCredentials([usernamePassword(credentialsId: 'harbor-creds',
@@ -31,24 +34,30 @@ pipeline {
         }
       }
     }
-
     stage('Update GitOps Repo') {
       steps {
         withCredentials([usernamePassword(credentialsId: 'git-creds',
                                           usernameVariable: 'GUSER',
                                           passwordVariable: 'GPASS')]) {
           sh """
+            rm -rf gitops-config
             git clone https://${GUSER}:${GPASS}@github.com/pan20020422/gitops-config.git
             cd gitops-config
-            sed -i "s#newTag: .*#newTag: ${TAG}#" apps/demo-api/overlays/dev/kustomization.yaml
+            sed -i "s#newTag:[[:space:]]*.*#newTag: ${TAG}#" apps/demo-api/overlays/dev/kustomization.yaml
             git config user.email "jenkins@ci.local"
             git config user.name "jenkins-ci"
-            git commit -am "chore(dev): bump demo-api to ${TAG}"
+            git add .
+            git commit -m "chore(dev): bump demo-api to ${TAG}"
             git push origin main
           """
         }
       }
     }
   }
-  post { always { cleanWs() } }
+  post {
+    always {
+      cleanWs()
+    }
+  }
 }
+
