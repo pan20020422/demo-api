@@ -43,7 +43,11 @@ pipeline {
             rm -rf gitops-config
             git clone https://${GUSER}:${GPASS}@github.com/pan20020422/gitops-config.git
             cd gitops-config
+            echo "======== sed 修改前 ========"
+            cat apps/demo-api/overlays/dev/kustomization.yaml
             sed -i "s#newTag:[[:space:]]*.*#newTag: ${TAG}#" apps/demo-api/overlays/dev/kustomization.yaml
+            echo "======== sed 修改后 ========"
+            cat apps/demo-api/overlays/dev/kustomization.yaml
             git config user.email "jenkins@ci.local"
             git config user.name "jenkins-ci"
             git add .
