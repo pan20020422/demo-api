@@ -1,4 +1,3 @@
-cat > app.py <<'EOF'
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
 class Handler(BaseHTTPRequestHandler):
@@ -17,4 +16,3 @@ class Handler(BaseHTTPRequestHandler):
             self.wfile.write(b"demo-api v5 ok, path=" + self.path.encode())
 
 HTTPServer(("0.0.0.0", 8080), Handler).serve_forever()
-EOF
