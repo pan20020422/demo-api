@@ -13,6 +13,6 @@ class Handler(BaseHTTPRequestHandler):
         else:
             self.send_response(200)
             self.end_headers()
-            self.wfile.write(b"demo-api v5 ok, path=" + self.path.encode())
+            self.wfile.write(b"demo-api v2 ok, path=" + self.path.encode())
 
 HTTPServer(("0.0.0.0", 8080), Handler).serve_forever()
